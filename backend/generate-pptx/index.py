@@ -493,7 +493,7 @@ def upload_to_s3(data: bytes, filename: str) -> str:
         ContentType='application/vnd.openxmlformats-officedocument.presentationml.presentation',
         ContentDisposition=f'attachment; filename="{filename}"',
     )
-    cdn_url = f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/files/{key}"
+    cdn_url = f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/{key}"
     return cdn_url
 
 
