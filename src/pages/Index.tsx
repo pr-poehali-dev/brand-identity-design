@@ -1,6 +1,49 @@
 import { useEffect, useRef, useState } from "react";
 import Icon from "@/components/ui/icon";
 
+const PPTX_URL = "https://functions.poehali.dev/5284ad88-3321-4e62-8807-ab56837ea396";
+
+function DownloadPptxButton() {
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+
+  const handleClick = async () => {
+    setLoading(true);
+    setDone(false);
+    try {
+      const res = await fetch(PPTX_URL);
+      const data = await res.json();
+      if (data.url) {
+        const a = document.createElement("a");
+        a.href = data.url;
+        a.download = data.filename || "AURUM_Presentation.pptx";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setDone(true);
+        setTimeout(() => setDone(false), 3000);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={loading}
+      className="flex items-center gap-3 px-8 py-4 transition-all duration-300 hover:opacity-80 disabled:opacity-50"
+      style={{ backgroundColor: "var(--ivory)", color: "var(--graphite)" }}
+    >
+      <Icon name={loading ? "Loader" : done ? "CheckCircle" : "Download"} size={16}
+        className={loading ? "animate-spin" : ""} />
+      <span className="font-body text-xs tracking-[0.2em] uppercase">
+        {loading ? "Генерируем..." : done ? "Готово!" : "Скачать презентацию .pptx"}
+      </span>
+    </button>
+  );
+}
+
 const IMG_TEXTILE = "https://cdn.poehali.dev/projects/3b373ac1-de12-4881-aa0b-a0a5a569a4b2/files/8c6054c2-ba45-4065-9b6c-cd5aea6ef9fa.jpg";
 const IMG_LOOKBOOK = "https://cdn.poehali.dev/projects/3b373ac1-de12-4881-aa0b-a0a5a569a4b2/files/acf20eb2-8a72-4389-80d8-bce002f0d0bf.jpg";
 const IMG_CAMPAIGN = "https://cdn.poehali.dev/projects/3b373ac1-de12-4881-aa0b-a0a5a569a4b2/files/3230b108-afb8-4c98-a1d0-505b6a416b49.jpg";
@@ -406,9 +449,8 @@ export default function Index() {
               </button>
             ))}
           </div>
-          <div className="font-body text-xs tracking-widest uppercase"
-            style={{ color: scrolled ? "var(--warm-gray)" : "rgba(245,240,232,0.6)" }}>
-            2024
+          <div className="flex items-center gap-6">
+            <DownloadPptxButton />
           </div>
         </div>
       </nav>
@@ -475,7 +517,19 @@ export default function Index() {
               ))}
             </div>
           </div>
-          <div className="flex items-center justify-between pt-8 border-t" style={{ borderColor: "rgba(200,184,154,0.2)" }}>
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 py-10 border-t border-b mb-10"
+            style={{ borderColor: "rgba(200,184,154,0.15)" }}>
+            <div>
+              <p className="font-display text-2xl italic font-light mb-1" style={{ color: "var(--ivory)" }}>
+                Скачать презентацию бренда
+              </p>
+              <p className="font-body text-xs" style={{ color: "var(--warm-gray)" }}>
+                8 слайдов · PowerPoint · Все разделы гайдлайна
+              </p>
+            </div>
+            <DownloadPptxButton />
+          </div>
+          <div className="flex items-center justify-between">
             <p className="font-body text-xs" style={{ color: "var(--warm-gray)" }}>
               © 2024 AURUM. Концептуальный бренд-проект.
             </p>
