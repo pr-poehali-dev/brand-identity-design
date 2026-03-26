@@ -25,9 +25,13 @@ WHITE   = RGBColor(0xFF, 0xFF, 0xFF)
 
 # Изображения бренда
 IMAGES = {
-    "textile":  "https://cdn.poehali.dev/projects/3b373ac1-de12-4881-aa0b-a0a5a569a4b2/files/8c6054c2-ba45-4065-9b6c-cd5aea6ef9fa.jpg",
-    "lookbook": "https://cdn.poehali.dev/projects/3b373ac1-de12-4881-aa0b-a0a5a569a4b2/files/acf20eb2-8a72-4389-80d8-bce002f0d0bf.jpg",
-    "campaign": "https://cdn.poehali.dev/projects/3b373ac1-de12-4881-aa0b-a0a5a569a4b2/files/3230b108-afb8-4c98-a1d0-505b6a416b49.jpg",
+    "textile":      "https://cdn.poehali.dev/projects/3b373ac1-de12-4881-aa0b-a0a5a569a4b2/files/8c6054c2-ba45-4065-9b6c-cd5aea6ef9fa.jpg",
+    "lookbook":     "https://cdn.poehali.dev/projects/3b373ac1-de12-4881-aa0b-a0a5a569a4b2/files/acf20eb2-8a72-4389-80d8-bce002f0d0bf.jpg",
+    "campaign":     "https://cdn.poehali.dev/projects/3b373ac1-de12-4881-aa0b-a0a5a569a4b2/files/3230b108-afb8-4c98-a1d0-505b6a416b49.jpg",
+    "flatlay":      "https://cdn.poehali.dev/projects/3b373ac1-de12-4881-aa0b-a0a5a569a4b2/files/25004912-cd7a-430c-9c80-acab1a251125.jpg",
+    "model":        "https://cdn.poehali.dev/projects/3b373ac1-de12-4881-aa0b-a0a5a569a4b2/files/406c26ee-ac2b-402c-85dc-32126c1fa8a5.jpg",
+    "web_mockup":   "https://cdn.poehali.dev/projects/3b373ac1-de12-4881-aa0b-a0a5a569a4b2/files/678f587b-16ad-4f16-afc9-5e63acf594ee.jpg",
+    "fabrics":      "https://cdn.poehali.dev/projects/3b373ac1-de12-4881-aa0b-a0a5a569a4b2/files/b64200ec-edfa-4071-b64d-42e50e9ae5f5.jpg",
 }
 
 SLIDE_W = Inches(13.33)
@@ -366,11 +370,201 @@ def slide_application(prs):
                  font_size=9, color=WARM_GRAY, font_name="Montserrat")
 
 
+def slide_collection_visuals(prs):
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+    set_bg(slide, GRAPHITE)
+
+    add_text(slide, "02b", Inches(0.5), Inches(0.4), Inches(1), Inches(0.4),
+             font_size=9, color=SAND, font_name="Montserrat")
+    add_text(slide, "ОДЕЖДА КОЛЛЕКЦИИ — TERRA FORMA",
+             Inches(1.2), Inches(0.4), Inches(9), Inches(0.4),
+             font_size=9, color=WARM_GRAY, font_name="Montserrat")
+    add_rect(slide, Inches(0.5), Inches(0.9), Inches(12.3), Pt(1), fill_color=SAND)
+
+    # Модель — большое фото слева
+    img_model = fetch_image(IMAGES["model"])
+    slide.shapes.add_picture(img_model, Inches(0.5), Inches(1.1), Inches(5.5), Inches(5.6))
+
+    # Flat-lay справа вверху
+    img_flat = fetch_image(IMAGES["flatlay"])
+    slide.shapes.add_picture(img_flat, Inches(6.2), Inches(1.1), Inches(6.6), Inches(2.7))
+
+    # Детали тканей справа внизу
+    img_fab = fetch_image(IMAGES["fabrics"])
+    slide.shapes.add_picture(img_fab, Inches(6.2), Inches(3.9), Inches(6.6), Inches(2.8))
+
+    # Подписи
+    add_text(slide, "Lookbook · Модель в пальто Terra Forma",
+             Inches(0.5), Inches(6.8), Inches(5.5), Inches(0.4),
+             font_size=9, italic=True, color=SAND, font_name="Montserrat")
+    add_text(slide, "Flat-lay · Ключевые силуэты SS24",
+             Inches(6.2), Inches(6.8), Inches(6), Inches(0.4),
+             font_size=9, italic=True, color=SAND, font_name="Montserrat")
+
+
+def slide_logo_rationale(prs):
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+    set_bg(slide, IVORY)
+
+    add_text(slide, "04b", Inches(0.5), Inches(0.4), Inches(1), Inches(0.4),
+             font_size=9, color=SAND, font_name="Montserrat")
+    add_text(slide, "ЛОГИКА ЛОГОТИПА",
+             Inches(1.2), Inches(0.4), Inches(8), Inches(0.4),
+             font_size=9, color=WARM_GRAY, font_name="Montserrat")
+    add_rect(slide, Inches(0.5), Inches(0.9), Inches(12.3), Pt(1), fill_color=SAND)
+
+    add_text(slide, "Почему AURUM выглядит именно так",
+             Inches(0.5), Inches(1.1), Inches(8), Inches(0.9),
+             font_size=36, italic=True, color=GRAPHITE, font_name="Georgia")
+
+    # Демонстрация логотипа
+    add_rect(slide, Inches(0.5), Inches(2.1), Inches(5.8), Inches(2.0), fill_color=GRAPHITE)
+    add_text(slide, "AURUM",
+             Inches(0.5), Inches(2.2), Inches(5.8), Inches(1.6),
+             font_size=72, color=IVORY, align=PP_ALIGN.CENTER, font_name="Georgia")
+
+    # Пояснения — три принципа
+    principles = [
+        ("Только текст, без символа",
+         "Имя бренда — само является символом. Золото (aurum) в химии не нуждается в иконке — только в чистоте написания."),
+        ("Cormorant Garamond",
+         "Засечный шрифт с историей. Отсылка к традиции ручного шитья и высокой моды — при этом достаточно геометричный для авангарда."),
+        ("Только заглавные буквы",
+         "Равнозначность каждой буквы. Нет иерархии — как в устойчивой моде нет «главного» и «второстепенного» в цепочке производства."),
+        ("Почему Берлин",
+         "Берлин — город, где авангард и осознанность сосуществуют в культуре. Это не маркетинг, а точное попадание в среду бренда."),
+    ]
+
+    py = Inches(2.1)
+    for i, (title, desc) in enumerate(principles):
+        col = i % 2
+        row = i // 2
+        cx = Inches(6.6) if col == 0 else Inches(10.0)
+        cy = Inches(2.1) + row * Inches(2.4)
+        add_rect(slide, cx, cy, Inches(3.1), Inches(2.1), fill_color=CREAM)
+        add_rect(slide, cx, cy, Inches(3.1), Pt(3), fill_color=SAND)
+        add_text(slide, title, cx + Inches(0.15), cy + Inches(0.18), Inches(2.8), Inches(0.6),
+                 font_size=11, bold=False, color=GRAPHITE, font_name="Georgia")
+        add_text(slide, desc, cx + Inches(0.15), cy + Inches(0.7), Inches(2.8), Inches(1.2),
+                 font_size=9, color=WARM_GRAY, font_name="Montserrat")
+
+    # Промо-каналы для материалов
+    add_rect(slide, Inches(0.5), Inches(4.3), Inches(5.8), Inches(1.0), fill_color=SAND)
+    add_text(slide, "ГДЕ ИСПОЛЬЗУЮТСЯ ПРОМО-МАТЕРИАЛЫ",
+             Inches(0.7), Inches(4.4), Inches(5.4), Inches(0.3),
+             font_size=8, color=GRAPHITE, font_name="Montserrat")
+    channels = [("Instagram / Reels", "1:1 и 4:5"), ("OOH / Афиши", "A1 формат"), ("Email-рассылка", "600px wide")]
+    for i, (ch, fmt) in enumerate(channels):
+        add_text(slide, f"· {ch}  —  {fmt}",
+                 Inches(0.7), Inches(4.8) + i * Inches(0.22), Inches(5.4), Inches(0.25),
+                 font_size=9, color=GRAPHITE, font_name="Montserrat")
+
+
+def slide_web_mockup(prs):
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+    set_bg(slide, CREAM)
+
+    add_text(slide, "05b", Inches(0.5), Inches(0.4), Inches(1), Inches(0.4),
+             font_size=9, color=SAND, font_name="Montserrat")
+    add_text(slide, "DIGITAL-НОСИТЕЛЬ — ВЕБ-САЙТ",
+             Inches(1.2), Inches(0.4), Inches(9), Inches(0.4),
+             font_size=9, color=WARM_GRAY, font_name="Montserrat")
+    add_rect(slide, Inches(0.5), Inches(0.9), Inches(12.3), Pt(1), fill_color=SAND)
+
+    add_text(slide, "Айдентика в digital-среде",
+             Inches(0.5), Inches(1.1), Inches(6), Inches(0.8),
+             font_size=36, italic=True, color=GRAPHITE, font_name="Georgia")
+
+    # Мокап сайта — большое изображение
+    img_web = fetch_image(IMAGES["web_mockup"])
+    slide.shapes.add_picture(img_web, Inches(0.5), Inches(2.0), Inches(8.5), Inches(4.8))
+
+    # Описание справа
+    add_rect(slide, Inches(9.2), Inches(2.0), Inches(3.9), Inches(4.8), fill_color=GRAPHITE)
+
+    web_points = [
+        ("Цвет фона", "Graphite #1C1916"),
+        ("Заголовки", "Cormorant Garamond Italic"),
+        ("Текст", "Montserrat Light"),
+        ("Акценты", "Sand #C8B89A"),
+        ("Сетка", "12-колоночная, отступы 80px"),
+        ("Мобильная версия", "Адаптирована 320px+"),
+    ]
+    add_text(slide, "ПАРАМЕТРЫ САЙТА",
+             Inches(9.4), Inches(2.15), Inches(3.5), Inches(0.35),
+             font_size=8, color=SAND, font_name="Montserrat")
+    wy = Inches(2.6)
+    for label, val in web_points:
+        add_text(slide, label, Inches(9.4), wy, Inches(3.5), Inches(0.28),
+                 font_size=8, color=WARM_GRAY, font_name="Montserrat")
+        add_text(slide, val, Inches(9.4), wy + Inches(0.27), Inches(3.5), Inches(0.32),
+                 font_size=11, color=IVORY, font_name="Georgia")
+        wy += Inches(0.62)
+
+    add_text(slide, "aurum.berlin",
+             Inches(0.5), Inches(6.9), Inches(4), Inches(0.4),
+             font_size=10, color=WARM_GRAY, font_name="Montserrat")
+
+
+def slide_ai_iterations(prs):
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+    set_bg(slide, IVORY)
+
+    add_text(slide, "06b", Inches(0.5), Inches(0.4), Inches(1), Inches(0.4),
+             font_size=9, color=SAND, font_name="Montserrat")
+    add_text(slide, "КАК РАБОТАЕТ ГЕНЕРАЦИЯ ВИЗУАЛОВ",
+             Inches(1.2), Inches(0.4), Inches(9), Inches(0.4),
+             font_size=9, color=WARM_GRAY, font_name="Montserrat")
+    add_rect(slide, Inches(0.5), Inches(0.9), Inches(12.3), Pt(1), fill_color=SAND)
+
+    add_text(slide, "От промпта к результату",
+             Inches(0.5), Inches(1.1), Inches(8), Inches(0.8),
+             font_size=36, italic=True, color=GRAPHITE, font_name="Georgia")
+
+    # Итерации — 3 шага
+    iterations = [
+        ("Итерация 1 — Концепция",
+         '"sustainable fashion editorial, minimalist, ivory tones"',
+         "Слишком нейтрально. Нет характера бренда, нет земляных оттенков."),
+        ("Итерация 2 — Уточнение",
+         '"avant-garde structured garments, clay sand beige, geometric folds, Berlin aesthetic"',
+         "Появилась геометрия и палитра. Но не хватало ощущения «земли»."),
+        ("Итерация 3 — Финал",
+         '"AURUM Terra Forma, recycled linen coat, clay-dyed fabric, earthy minimalism, editorial photography"',
+         "Точное попадание: бренд, материал, настроение — всё считывается с первого взгляда."),
+    ]
+    iy = Inches(2.1)
+    for i, (title, prompt, result) in enumerate(iterations):
+        bg = CREAM if i % 2 == 0 else IVORY
+        add_rect(slide, Inches(0.5), iy, Inches(12.3), Inches(1.55), fill_color=bg)
+        # Номер
+        add_rect(slide, Inches(0.5), iy, Inches(0.4), Inches(1.55), fill_color=SAND if i == 2 else WARM_GRAY)
+        add_text(slide, str(i + 1), Inches(0.5), iy + Inches(0.5), Inches(0.4), Inches(0.6),
+                 font_size=14, bold=True, color=IVORY, align=PP_ALIGN.CENTER, font_name="Montserrat")
+        # Заголовок
+        add_text(slide, title, Inches(1.1), iy + Inches(0.1), Inches(11.5), Inches(0.4),
+                 font_size=11, color=GRAPHITE, font_name="Georgia")
+        # Промпт
+        add_text(slide, prompt, Inches(1.1), iy + Inches(0.45), Inches(11.5), Inches(0.5),
+                 font_size=9, italic=True, color=WARM_GRAY, font_name="Montserrat")
+        # Результат
+        marker = "✓" if i == 2 else "→"
+        add_text(slide, f"{marker} {result}", Inches(1.1), iy + Inches(0.92), Inches(11.5), Inches(0.5),
+                 font_size=10, color=GRAPHITE if i == 2 else WARM_GRAY, font_name="Montserrat")
+        iy += Inches(1.65)
+
+    # Вывод
+    add_rect(slide, Inches(0.5), Inches(7.0), Inches(12.3), Inches(0.35), fill_color=GRAPHITE)
+    add_text(slide, "Каждый визуал прошёл минимум 3 итерации уточнения промпта перед финальным выбором",
+             Inches(0.7), Inches(7.04), Inches(12), Inches(0.28),
+             font_size=9, color=SAND, font_name="Montserrat")
+
+
 def slide_process(prs):
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     set_bg(slide, IVORY)
 
-    add_text(slide, "06", Inches(0.5), Inches(0.4), Inches(1), Inches(0.4),
+    add_text(slide, "07", Inches(0.5), Inches(0.4), Inches(1), Inches(0.4),
              font_size=9, color=SAND, font_name="Montserrat")
     add_text(slide, "ПРОЦЕСС СОЗДАНИЯ",
              Inches(1.2), Inches(0.4), Inches(8), Inches(0.4),
@@ -466,10 +660,14 @@ def build_pptx() -> bytes:
     slide_cover(prs)
     slide_positioning(prs)
     slide_product(prs)
+    slide_collection_visuals(prs)
     slide_promo(prs)
     slide_identity(prs)
+    slide_logo_rationale(prs)
     slide_application(prs)
+    slide_web_mockup(prs)
     slide_process(prs)
+    slide_ai_iterations(prs)
     slide_end(prs)
 
     buf = io.BytesIO()
