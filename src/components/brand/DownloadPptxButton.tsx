@@ -11,17 +11,19 @@ export default function DownloadPptxButton() {
     setDone(false);
     try {
       const res = await fetch(PPTX_URL);
-      const data = await res.json();
-      if (data.url) {
-        const a = document.createElement("a");
-        a.href = data.url;
-        a.download = data.filename || "AURUM_Presentation.pptx";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setDone(true);
-        setTimeout(() => setDone(false), 3000);
-      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "AURUM_Brand_Presentation_v2.pptx";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      setDone(true);
+      setTimeout(() => setDone(false), 3000);
+    } catch (e) {
+      console.error("Fetch error:", e, PPTX_URL);
     } finally {
       setLoading(false);
     }

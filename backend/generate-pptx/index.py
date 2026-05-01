@@ -38,10 +38,14 @@ SLIDE_W = Inches(13.33)
 SLIDE_H = Inches(7.5)
 
 
-def fetch_image(url: str) -> io.BytesIO:
+def fetch_image(url: str, max_px: int = 1200) -> io.BytesIO:
     r = requests.get(url, timeout=15)
     r.raise_for_status()
-    buf = io.BytesIO(r.content)
+    img = Image.open(io.BytesIO(r.content)).convert("RGB")
+    if max(img.size) > max_px:
+        img.thumbnail((max_px, max_px), Image.LANCZOS)
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG", quality=75, optimize=True)
     buf.seek(0)
     return buf
 
@@ -676,27 +680,73 @@ def build_pptx() -> bytes:
     return buf.read()
 
 
-def upload_to_s3(data: bytes, filename: str) -> str:
-    s3 = boto3.client(
+FILENAME = 'AURUM_Brand_Presentation_v2.pptx'
+S3_KEY = f"pptx/{FILENAME}"
+
+
+def get_s3_client():
+    return boto3.client(
         's3',
         endpoint_url='https://bucket.poehali.dev',
         aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
         aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
     )
-    key = f"pptx/{filename}"
+
+
+def file_exists_in_s3() -> bool:
+    s3 = get_s3_client()
+    try:
+        s3.head_object(Bucket='files', Key=S3_KEY)
+        return True
+    except Exception:
+        return False
+
+
+def upload_to_s3(data: bytes) -> str:
+    s3 = get_s3_client()
     s3.put_object(
         Bucket='files',
-        Key=key,
+        Key=S3_KEY,
         Body=data,
         ContentType='application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        ContentDisposition=f'attachment; filename="{filename}"',
+        ContentDisposition=f'attachment; filename="{FILENAME}"',
     )
-    cdn_url = f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/{key}"
-    return cdn_url
+    return f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/{S3_KEY}"
+
+
+def get_cdn_url() -> str:
+    return f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/{S3_KEY}"
+
+
+def list_all_files() -> list:
+    s3 = get_s3_client()
+    result = []
+    try:
+        paginator = s3.get_paginator('list_objects_v2')
+        for page in paginator.paginate(Bucket='files'):
+            result.extend(page.get('Contents', []))
+    except Exception:
+        pass
+    return result
+
+
+def cleanup_old_files():
+    s3 = get_s3_client()
+    try:
+        all_files = list_all_files()
+        deleted = []
+        for obj in all_files:
+            key = obj['Key']
+            if key != S3_KEY:
+                s3.delete_object(Bucket='files', Key=key)
+                deleted.append(key)
+        return deleted
+    except Exception:
+        return []
 
 
 def handler(event: dict, context) -> dict:
-    """Генерирует PowerPoint-презентацию AURUM и возвращает ссылку для скачивания."""
+    """Генерирует PPTX-презентацию AURUM и возвращает файл напрямую в base64."""
     cors = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -707,10 +757,15 @@ def handler(event: dict, context) -> dict:
         return {'statusCode': 200, 'headers': cors, 'body': ''}
 
     pptx_bytes = build_pptx()
-    url = upload_to_s3(pptx_bytes, 'AURUM_Brand_Presentation.pptx')
+    b64 = base64.b64encode(pptx_bytes).decode('utf-8')
 
     return {
         'statusCode': 200,
-        'headers': {**cors, 'Content-Type': 'application/json'},
-        'body': json.dumps({'url': url, 'filename': 'AURUM_Brand_Presentation.pptx'}),
+        'headers': {
+            **cors,
+            'Content-Type': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'Content-Disposition': f'attachment; filename="{FILENAME}"',
+        },
+        'body': b64,
+        'isBase64Encoded': True,
     }

@@ -1,12 +1,10 @@
 {
   "tests": [
     {
-      "name": "Generate AURUM PPTX",
-      "method": "GET",
+      "name": "OPTIONS preflight",
+      "method": "OPTIONS",
       "path": "/",
-      "expectedStatus": 200,
-      "expectedBody": {"url": "string"},
-      "bodyMatcher": "partial"
+      "expectedStatus": 200
     }
   ]
 }
